@@ -1191,7 +1191,7 @@
           var count_by_funding_stage = d3
             .nest()
             .key(function(d) {
-              return d["Funding ↵Round"];
+              return d["Funding \nRound"];
             })
             .rollup(function(v) {
               return v.length;
@@ -2153,7 +2153,7 @@
               return d.yearY;
             })
             .attr("fill", function(d) {
-              return nodeColorScale(fundingCategoryScale(d["Funding ↵Round"]));
+              return nodeColorScale(fundingCategoryScale(d["Funding \nRound"]));
             })
             .on("mouseover", function(d) {
               nodeMouseOver(d);
@@ -2203,14 +2203,14 @@
               return d["Startup"].toLowerCase().replace(/ /g, "-");
             })
             .attr("width", function(d) {
-              if (d["Funding ↵Round"] === "Acquired") {
+              if (d["Funding \nRound"] === "Acquired") {
                 return 8.8;
               } else {
                 return 0;
               }
             })
             .attr("height", function(d) {
-              if (d["Funding ↵Round"] === "Acquired") {
+              if (d["Funding \nRound"] === "Acquired") {
                 return 8.8;
               } else {
                 return 0;
@@ -2257,21 +2257,21 @@
 
             if (filterKey === "acquired") {
               nodes.attr("opacity", function(d) {
-                if (d["Funding ↵Round"] !== "Acquired") {
+                if (d["Funding \nRound"] !== "Acquired") {
                   d.opacity = 0.3;
                 }
                 return d.opacity;
               });
 
               nodes_acquired.attr("opacity", function(d) {
-                if (d["Funding ↵Round"] === "Acquired") {
+                if (d["Funding \nRound"] === "Acquired") {
                   d.opacity = 1;
                 }
                 return d.opacity;
               });
 
               nodes_activity.attr("opacity", function(d) {
-                if (d["Funding ↵Round"] !== "Acquired") {
+                if (d["Funding \nRound"] !== "Acquired") {
                   d.opacity = 0.3;
                 }
                 return d.opacity;
@@ -2288,7 +2288,7 @@
               nodes.attr("opacity", function(d) {
                 if (
                   d["Activity/Acquisition Time"] != "" &&
-                  d["Funding ↵Round"] !== "Acquired"
+                  d["Funding \nRound"] !== "Acquired"
                 ) {
                   d.opacity = 1;
                 } else {
@@ -2327,7 +2327,7 @@
               type === "key"
             ) {
               nodes.attr("opacity", function(v) {
-                if (fundingCategoryScale(v["Funding ↵Round"]) === filterKey) {
+                if (fundingCategoryScale(v["Funding \nRound"]) === filterKey) {
                   v.opacity = 1;
                 } else {
                   v.opacity = 0.3;
@@ -2336,7 +2336,7 @@
               });
 
               nodes_acquired.attr("opacity", function(d) {
-                if (d["Funding ↵Round"] === "Acquired") {
+                if (d["Funding \nRound"] === "Acquired") {
                   d.opacity = 0.3;
                 }
                 return d.opacity;
@@ -2421,7 +2421,7 @@
                 }
                 if (
                   d.hide === true ||
-                  d["Funding ↵Round"] === "Acquired" ||
+                  d["Funding \nRound"] === "Acquired" ||
                   d["Competitor Category"] != ""
                 ) {
                   endR = 0;
@@ -2492,7 +2492,7 @@
               .duration(animationDuration * 0.7)
               .attrTween("width", function(d) {
                 var startWidth = d3.select(this).attr("width");
-                if (d.hide === true || d["Funding ↵Round"] !== "Acquired") {
+                if (d.hide === true || d["Funding \nRound"] !== "Acquired") {
                   endWidth = 0;
                 } else {
                   endWidth = 8.8;
@@ -2504,7 +2504,7 @@
               })
               .attrTween("height", function(d) {
                 var startHeight = d3.select(this).attr("height");
-                if (d.hide === true || d["Funding ↵Round"] !== "Acquired") {
+                if (d.hide === true || d["Funding \nRound"] !== "Acquired") {
                   endHeight = 0;
                 } else {
                   endHeight = 8.8;
@@ -2516,7 +2516,7 @@
               })
               .attrTween("y", function(d) {
                 var startY = d3.select(this).attr("y");
-                if (d.hide === true || d["Funding ↵Round"] !== "Acquired") {
+                if (d.hide === true || d["Funding \nRound"] !== "Acquired") {
                   endY = 7;
                 } else {
                   endY = 0;
@@ -2538,7 +2538,7 @@
                 var startR = d3.select(this).attr("r");
                 if (
                   (d["Industry"] === type || type === "All Startups") &&
-                  d["Funding ↵Round"] !== "Acquired" &&
+                  d["Funding \nRound"] !== "Acquired" &&
                   d.hide === false
                 ) {
                   var endR = 3.4;
@@ -2593,7 +2593,7 @@
                 var startWidth = d3.select(this).attr("width");
                 if (
                   (d["Industry"] === type || type === "All Startups") &&
-                  d["Funding ↵Round"] === "Acquired" &&
+                  d["Funding \nRound"] === "Acquired" &&
                   d.hide === false
                 ) {
                   var endWidth = 8.8;
@@ -2609,7 +2609,7 @@
                 var startHeight = d3.select(this).attr("height");
                 if (
                   (d["Industry"] === type || type === "All Startups") &&
-                  d["Funding ↵Round"] === "Acquired" &&
+                  d["Funding \nRound"] === "Acquired" &&
                   d.hide === false
                 ) {
                   var endHeight = 8.8;
@@ -2625,7 +2625,7 @@
                 var startY = d3.select(this).attr("y");
                 if (
                   (d["Industry"] === type || type === "All Startups") &&
-                  d["Funding ↵Round"] === "Acquired" &&
+                  d["Funding \nRound"] === "Acquired" &&
                   d.hide === false
                 ) {
                   var endY = 0;
@@ -3043,7 +3043,7 @@
               } */
             if (type === "color") {
               nodes.attr("opacity", function(d) {
-                if (fundingCategoryScale(d["Funding ↵Round"]) === data) {
+                if (fundingCategoryScale(d["Funding \nRound"]) === data) {
                   return 1;
                 } else {
                   return 0.3;
@@ -3194,13 +3194,13 @@
               });
 
             nodes.attr("opacity", function(d) {
-              if (d["Funding ↵Round"] === data["Funding ↵Round"]) {
+              if (d["Funding \nRound"] === data["Funding \nRound"]) {
                 return 1;
               } else {
                 return 0.3;
               }
             });
-            if (data["Funding ↵Round"] === "Acquired") {
+            if (data["Funding \nRound"] === "Acquired") {
               nodes_acquired.attr("opacity", 1);
             } else {
               nodes_acquired.attr("opacity", 0.3);
@@ -3481,7 +3481,7 @@
                   .append("circle")
                   .attr("class", "nodes")
                   .attr("r", function(d) {
-                    if (d["Funding ↵Round"] !== "Acquired") {
+                    if (d["Funding \nRound"] !== "Acquired") {
                       return 3.4;
                     }
                   })
@@ -3490,7 +3490,7 @@
                   })
                   .attr("fill", function(d) {
                     return nodeColorScale(
-                      fundingCategoryScale(d["Funding ↵Round"])
+                      fundingCategoryScale(d["Funding \nRound"])
                     );
                   })
                   .attr("cx", function(d) {
@@ -3530,14 +3530,14 @@
                     return d.opacity;
                   })
                   .attr("width", function(d) {
-                    if (d["Funding ↵Round"] === "Acquired") {
+                    if (d["Funding \nRound"] === "Acquired") {
                       return 8.8;
                     } else {
                       return 0;
                     }
                   })
                   .attr("height", function(d) {
-                    if (d["Funding ↵Round"] === "Acquired") {
+                    if (d["Funding \nRound"] === "Acquired") {
                       return 8.8;
                     } else {
                       return 0;
