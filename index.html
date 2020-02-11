@@ -26,7 +26,6 @@
         grid-row: 1 / span 1;
         overflow: hidden;
         padding: 30px;
-        opacity: 0
       }
 
       #control-container {
@@ -601,10 +600,14 @@
 
       #startup-list {
         padding: 40px;
+        max-height: 300px;
+        overflow: scroll;
       }
 
       .startup-table {
         min-width: 300px;
+        max-height: 300px;
+        overflow: scroll;
         font-family: "Graphik Regular";
         background-color: white;
         border: 1px solid #949494;
@@ -615,6 +618,14 @@
         font-size: 12px;
         height: 25px;
       }
+
+      .startup-table td {
+        min-width: 60px;
+      }
+
+      .table-header {
+        font-family: "Graphik Bold";  
+      }
     </style>
   </head>
 
@@ -622,6 +633,7 @@
     <div id="chart-container"></div>
     <div id="key-container"></div>
     <div id="control-container">
+        <button class="switch-button" id="map-button">View Map</button>
       <div>
 
           <div class="dropdown-industry">
@@ -644,7 +656,6 @@
     <div id="tmp-container"></div>
     <div id="save-button-container">
       <button class="switch-button" id="save-button">Save Image</button>
-      <button class="switch-button" id="map-button">View Map</button>
     </div>
 
     <script>
@@ -749,27 +760,12 @@
         .attr("width", leftWidth)
         .attr("height", leftHeight);
 
+                        d3.select(".map-container").style("display", "none")
+                d3.select(".map-tooltip").style("display", "none")
+
       var leftG = leftSVG.append("g");
 
       var leftPath = d3.geoPath().projection(leftProjection);
-
-      function format_funding(amount) {
-        if (amount) {
-          amount = (amount + "").split("")
-          var num_length = amount.length
-          var result = ""
-          for (i=0; i < num_length - 2; i++) {
-            if (amount[i] !== "" && amount[i] !== "." && amount[i] !== "$") {
-              result += amount[i]
-            }
-          }
-          amount = parseFloat(result) * 1000000
-        } else {
-          amount = 0
-        }
-        return amount
-        
-      }
 
       /* var chartLogo = chartSVG
         .append("image")
@@ -815,16 +811,15 @@
 
             d3.json("world_countries.json").then(function(json) {
 
-                d3.select(".map-container").style("display", "none")
-                d3.select(".map-tooltip").style("display", "none")
 
-                          // START::START
+            json.features.push({"type": "features", "properties": {"name": "Singapore"}, "geometry": {"type": "Polygon", "coordinates": [[0, 0]]}})
+            json.features.push({"type": "features", "properties": {"name": "Bahrain"}, "geometry": {"type": "Polygon", "coordinates": [[0, 0]]}})
 
             d3.select("#chart-button").on("click", function() {
               toggle_map("off");
             });
 
-            function country_hover(d) {
+            function country_hover(d, i) {
               d3.selectAll(".country-circle")
                 .attr("fill", "#ea3b66")
                 .attr("stroke", "#ea3b66");
@@ -836,10 +831,10 @@
               d3.select(".map-tooltip")
                 .html(tooltip)
                 .style("top", function() {
-                  return leftPath.centroid(d)[1] + "px";
+                  return leftCentroids[i][1] + "px";
                 })
                 .style("left", function() {
-                  return leftPath.centroid(d)[0] + "px";
+                  return leftCentroids[i][0] + "px";
                 })
                 .style("display", "");
 
@@ -851,6 +846,7 @@
                   var obj = {
                     Startup: w.Startup,
                     Funding: w["Total \nfunding (US$)"],
+                    URL: w["URL"],
                     Year: w["Founded"]
                   };
                   startup_list.push(obj);
@@ -858,12 +854,15 @@
               });
               var table = "";
               table += "<table class='startup-table'>";
-              startup_list.forEach(function(v) {
                 table +=
-                  "<tr><td>" +
+                  "<tr class='table-header'><td>Company:<\/td><td>Funding:<\/td><td>Founded Year:<\/td><\/tr>"
+              startup_list.forEach(function(v) {
+                  console.log(v)
+                table +=
+                  "<tr><td><a href='" + v.URL + "' target='_blank'>" +
                   v.Startup +
-                  "<\/td><td>" +
-                  v.Funding +
+                  "</a><\/td><td>$" +
+                    formatFunding(v.Funding) +
                   "<\/td><td>" +
                   v.Year +
                   "<\/td><\/tr>";
@@ -877,11 +876,15 @@
               return leftPath.centroid(feature);
             });
 
+            console.log(leftCentroids)
+
             // manual adjustments to country centroids:
             leftCentroids[170] = [160.28813150973434, 200.53652705535595];
             leftCentroids[28] = [133.39281332553415, 132.40027710817226];
             leftCentroids[6] = [499.3566464049186, 484.20930510242];
             leftCentroids[121] = [381.8299314691847, 98.47135868701795];
+            leftCentroids[177] = [890, 450]
+            leftCentroids[178] = [708, 370]
 
             data_country = d3
               .nest()
@@ -899,7 +902,7 @@
               })
               .entries(json.features);
 
-            console.log(json_country);
+              
 
             data.forEach(function(v) {
               //console.log(v["Country"]);
@@ -932,6 +935,16 @@
               });
             });
 
+            var max_country = d3.max(json.features, function(w) {
+                return w.properties.startups
+            })
+
+            console.log(max_country)
+
+            var countryCircleScale = d3.scaleSqrt()
+            .domain([1,max_country])
+            .range([2.6, 30]);
+
             leftG
               .selectAll("circlce")
               .data(json.features)
@@ -940,14 +953,14 @@
               .classed("country-circle", true)
               .attr("r", function(d) {
                 if (d.properties.startups > 0) {
-                  return d.properties.startups + 3;
+                  return countryCircleScale(d.properties.startups);
                 }
               })
-              .attr("cx", function(d) {
-                return leftPath.centroid(d)[0];
+              .attr("cx", function(d, i) {
+                return leftCentroids[i][0];
               })
-              .attr("cy", function(d) {
-                return leftPath.centroid(d)[1];
+              .attr("cy", function(d, i) {
+                return leftCentroids[i][1];
               })
               .attr("fill", "#ea3b66")
               .attr("stroke", "#ea3b66")
@@ -977,7 +990,7 @@
               d["Total \nfunding (US$)"] = 0;
             }
 
-            d["Total \nfunding (US$)"] = format_funding(d["Total \nfunding (US$)"])
+            d["Total \nfunding (US$)"] = (d["Total \nfunding (US$)"])
 
             d["Opportunity Space"] = d["Opportunity Space"]
               .toLowerCase()
